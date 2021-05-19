@@ -7,4 +7,5 @@ import com.infy.microservices.exception.ProductMSException;
 
 public interface SubscribedProductService {
 	public List<SubscribedProductDTO> findAllSubscribedProducts(Integer buyerId) throws ProductMSException;
+	public Integer addSubscription(SubscribedProductDTO subscribedProductDTO);
 }

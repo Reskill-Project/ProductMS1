@@ -2,6 +2,7 @@ package com.infy.microservices.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -58,6 +59,47 @@ public class ProductServiceImpl implements ProductService{
 		product.setSubcategory(productDTO.getSubcategory());
 		productMSRepository.save(product);
 		return product.getProdId();
+	}
+
+	@Override
+	public boolean findProduct(Integer prodId, Integer quantity) throws ProductMSException {
+		Optional<Product> optional = productMSRepository.findById(prodId);
+		Product product = optional.orElseThrow(()->new ProductMSException("ProductService.NO_PRODUCTS_AVAILABLE"));
+		if(product.getStock()>quantity) {
+			updateProductStock(prodId, quantity);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void updateProductStock(Integer prodId, Integer quantity) throws ProductMSException {
+		Optional<Product> optional = productMSRepository.findById(prodId);
+		Product product = optional.orElseThrow(()->new ProductMSException("ProductService.NO_PRODUCTS_AVAILABLE"));
+		Integer remainingStock = product.getStock()-quantity;
+		product.setStock(remainingStock);
+	}
+	
+	@Override
+	public ProductDTO getProduct(Integer productId){
+		// TODO Auto-generated method stub
+		Optional<Product> optional= productMSRepository.findById(productId);
+		Product product = optional.orElse(null);
+		if(product==null) {
+			return null;
+		}
+		ProductDTO productDto= new ProductDTO();
+		productDto.setProdId(product.getProdId());
+		productDto.setName(product.getImage());
+		productDto.setImage(product.getImage());
+		productDto.setCategory(product.getCategory());
+		productDto.setDescription(product.getDescription());
+		productDto.setPrice(product.getPrice());
+		productDto.setRating(product.getRating());
+		productDto.setSellerId(product.getSellerId());
+		productDto.setSubcategory(product.getSubcategory());;
+		productDto.setStock(product.getStock());	
+		return productDto;
 	}
 
 }

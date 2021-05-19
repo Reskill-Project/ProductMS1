@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.infy.microservices.dto.SubscribedProductDTO;
+import com.infy.microservices.entity.CompositeKey;
 import com.infy.microservices.entity.SubscribedProduct;
 import com.infy.microservices.exception.ProductMSException;
 import com.infy.microservices.repository.SubscribedProductRepository;
@@ -34,6 +35,17 @@ public class SubscribedProductServiceImpl implements SubscribedProductService {
 			throw new ProductMSException("SubscribedProductService.NO_PRODUCTS_AVAILABLE");
 		}
 		return subscribedProductDTOs;
+	}
+	@Override
+	public Integer addSubscription(SubscribedProductDTO subscribedProductDTO) {
+		SubscribedProduct product = new SubscribedProduct();
+		CompositeKey newId = new CompositeKey();
+		newId.setBuyerId(subscribedProductDTO.getBuyerId());
+		newId.setProdId(subscribedProductDTO.getProdId());
+		product.setId(newId);
+		product.setQuantity(subscribedProductDTO.getQuantity());
+		subscribedRepo.save(product);
+		return subscribedProductDTO.getBuyerId();
 	}
 	
 }

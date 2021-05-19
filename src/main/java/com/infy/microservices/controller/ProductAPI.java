@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,25 @@ public class ProductAPI {
 		}
 	}
 	
+	@GetMapping(value = "/{prodId}/{quantity}")
+	public String getProductAvailablility(@PathVariable("prodId") Integer prodId, @PathVariable("quantity") Integer quantity){
+		try {
+			boolean val = productService.findProduct(prodId, quantity);
+			if(val) {
+				String s= "Items are available for the given quantity";
+				return s;
+			}
+			else {
+				String s= "Quantity is unavailable";
+				return s;
+			}
+		}
+		catch(Exception e){
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, environment.getProperty(e.getMessage()));
+		}
+	}
+	
+	
 	@PostMapping(value = "/add")
 	public ResponseEntity<String> addProduct(@Valid @RequestBody ProductDTO productDTO){
 		try {
@@ -52,4 +72,11 @@ public class ProductAPI {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, environment.getProperty(e.getMessage()));
 		}
 	}
+	
+	@GetMapping(value = "/product/{prodId}")
+	public ProductDTO getProduct(@PathVariable Integer prodId){
+			ProductDTO product = productService.getProduct(prodId);
+			return product;
+	}
+	
 }
